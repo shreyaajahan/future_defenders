@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+      body, html {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          overflow: hidden;
+      }
+
+      .carousel-container {
+          position: relative;
+          width: 100vw;
+          height: 100vh; 
+          overflow: hidden;
+      }
+
+      .carousel-images img {
+          width: 100vw;
+          height: 100vh;
+          object-fit: contain; 
+          display: none;
+      }
+
+      
+      .carousel-images img.active {
+          display: block;
+      }
+
+      .start-button {
+          display: block;
+          width: 150px;
+          padding: 10px 20px;
+          margin: 20px auto;
+          text-align: center;
+          font-size: 18px;
+          font-weight: bold;
+          color: white;
+          background-color: #007bff; 
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          text-decoration: none;
+          position: absolute;
+          bottom: 50px; 
+          left: 50%;
+          transform: translateX(-50%);
+          animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+          0% {
+              transform: scale(1);
+          }
+          50% {
+              transform: scale(1.1);
+          }
+          100% {
+              transform: scale(1);
+          }
+      }
+
+      
+      .start-button:hover {
+          background-color: #0056b3; 
+      }
+  </style>
+</head>
+<body>
+
+    <audio autoplay loop>
+        <source src="bgm.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="carousel-container">
+        <div class="carousel-images">
+            <img src="future_defenders1.jpg" class="active" alt="Image 1">
+            <img src="future_defenders2.jpg" alt="Image 2">
+        </div>
+    </div>
+
+    <a href="start.html" class="start-button">Start</a>
+
+    <script>
+       
+        const images = document.querySelectorAll('.carousel-images img');
+        let currentIndex = 0;
+
+        
+        function showNextImage() {
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
+        }
+
+        
+        setInterval(showNextImage, 3000);
+    </script>
+</body>
+</html>

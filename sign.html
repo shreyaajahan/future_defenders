@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RightRangers</title>
+    <link rel="stylesheet" href="sign.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="slider"></div>
+        <div class="btn">
+            <button class="login">Login</button>
+            <button class="signup">Signup</button>
+        </div>
+
+        <div class="form-section">
+
+            <div class="login-box">
+                <form method="POST" action="teena.html">
+                    <input type="text" class="name ele" name="name" placeholder="Enter your name" required>
+                    <input type="password" class="password ele" name="password" placeholder="password" required>
+                    <button type="submit" class="clkbtn" name="login">Login</button>
+                    <button type="button" onclick="goToHomePage()">Go to Home Page</button>
+                </form>
+            </div>
+
+            <div class="signup-box" mt-3>
+                <form method="POST" action="teena.html">
+                    <input type="text" class="name ele" name="name" placeholder="Enter your name" required>
+                    <input type="password" class="password ele" name="password" placeholder="password" required>
+                    <input type="password" class="password ele" name="confirm_password" placeholder="Confirm password" required>
+                    <button type="submit" class="clkbtn" name="signup">Signup</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToHomePage() {
+            window.location.href = 'homepage.html'; 
+        }
+    </script>
+    
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fun Quizzes - Test Your Knowledge</title>
+  <style>
+    /* Same styling as before */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #ff6347;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px #ff4500;
+    }
+
+    #intro-container {
+      text-align: center;
+    }
+
+    .intro-text {
+      font-size: 1.5em;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    #quiz-container {
+      display: none;
+      background-color: #fff;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 500px;
+      text-align: center;
+      animation: fadeIn 1s;
+    }
+
+    .question {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option {
+      background-color: #ffebcd;
+      padding: 1em;
+      border: 2px solid #ff6347;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      font-size: 1.2em;
+    }
+
+    .option:hover {
+      background-color: #ff6347;
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    .option.correct {
+      background-color: #32cd32;
+      color: #fff;
+    }
+
+    .option.incorrect {
+      background-color: #ff6347;
+      color: #fff;
+    }
+
+    #score-container {
+      font-size: 1.5em;
+      margin-top: 20px;
+      color: #ff6347;
+    }
+
+    .restart-btn, .back-btn {
+      padding: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.2em;
+      margin-top: 1em;
+      transition: background-color 0.3s;
+      color: #fff;
+    }
+
+    .restart-btn {
+      background-color: #ff6347;
+      margin-right: 10px;
+    }
+
+    .restart-btn:hover {
+      background-color: #ff4500;
+    }
+
+    .back-btn {
+      background-color: #32cd32;
+    }
+
+    .back-btn:hover {
+      background-color: #228b22;
+    }
+
+    .take-quiz-btn {
+      background-color: #32cd32;
+      color: #fff;
+      padding: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.5em;
+      transition: background-color 0.3s;
+    }
+
+    .take-quiz-btn:hover {
+      background-color: #228b22;
+    }
+
+    .timer {
+      font-size: 1.5em;
+      margin-top: 20px;
+      color: #ff6347;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 20px;
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: #ff6347;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+
+    /* Animation for fade-in */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="intro-container">
+    <h1>🎉 Fun Quizzes 🎉</h1>
+    <p class="intro-text">Test your knowledge with fun quizzes about your rights and responsibilities!</p>
+    <button id="take-quiz-btn" class="take-quiz-btn">Take Quiz</button>
+  </div>
+
+  <div id="quiz-container">
+    <div id="question-container" class="question"></div>
+    <div id="options-container" class="options"></div>
+    <div id="score-container"></div>
+    <div id="timer" class="timer">Time: <span id="time-left">30</span></div>
+    <div class="progress-bar-container">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+    <button id="restart-btn" class="restart-btn" style="display: none;">Play Again</button>
+    <button id="back-btn" class="back-btn" style="display: none;">Back</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "What is the right to free speech?", options: ["Freedom to say anything", "Freedom to express ideas", "Freedom to speak without punishment", "Freedom to shout in public"], answer: "Freedom to express ideas" },
+      { question: "What is a responsibility of a citizen?", options: ["Right to vote", "Paying taxes", "Freedom of assembly", "Freedom of speech"], answer: "Paying taxes" },
+      { question: "Which of the following is a fundamental human right?", options: ["Right to education", "Right to own a house", "Right to wealth", "Right to free entertainment"], answer: "Right to education" },
+      { question: "What does 'right to privacy' mean?", options: ["Freedom to do anything in private", "Freedom from government surveillance", "Freedom to keep secrets", "Freedom from public opinion"], answer: "Freedom from government surveillance" },
+      { question: "What is the right to a fair trial?", options: ["Right to avoid jail", "Right to be judged by your peers", "Right to defend yourself", "Right to a quick trial"], answer: "Right to be judged by your peers" }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer = 30;
+    let timerInterval;
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (timer > 0) {
+          timer--;
+          document.getElementById("time-left").textContent = timer;
+          updateProgressBar();
+        } else {
+          clearInterval(timerInterval);
+          showFinalScore();
+        }
+      }, 1000);
+    }
+
+    function updateProgressBar() {
+      const progressBar = document.getElementById("progress-bar");
+      progressBar.style.width = `${(currentQuestionIndex / questions.length) * 100}%`;
+    }
+
+    function loadQuestion() {
+      const questionContainer = document.getElementById("question-container");
+      const optionsContainer = document.getElementById("options-container");
+      const currentQuestion = questions[currentQuestionIndex];
+
+      questionContainer.textContent = currentQuestion.question;
+      optionsContainer.innerHTML = "";
+      currentQuestion.options.forEach(option => {
+        const optionDiv = document.createElement("div");
+        optionDiv.textContent = option;
+        optionDiv.classList.add("option");
+        optionDiv.onclick = () => checkAnswer(option, optionDiv);
+        optionsContainer.appendChild(optionDiv);
+      });
+    }
+
+    function checkAnswer(selectedOption, optionDiv) {
+      const correctAnswer = questions[currentQuestionIndex].answer;
+
+      if (selectedOption === correctAnswer) {
+        optionDiv.classList.add("correct");
+        score++;
+      } else {
+        optionDiv.classList.add("incorrect");
+      }
+
+      setTimeout(() => {
+        if (currentQuestionIndex < questions.length - 1) {
+          currentQuestionIndex++;
+          loadQuestion();
+        } else {
+          showFinalScore();
+        }
+      }, 1000);
+    }
+
+    function showFinalScore() {
+      clearInterval(timerInterval);  // Stop the timer
+      document.getElementById("question-container").textContent = "";  // Clear question
+      document.getElementById("options-container").innerHTML = "";  // Clear options
+      document.getElementById("timer").style.display = "none";  // Hide timer
+      document.getElementById("score-container").textContent = `Your Score: ${score} / ${questions.length}`;
+      document.getElementById("restart-btn").style.display = "inline-block";  // Show restart button
+      document.getElementById("back-btn").style.display = "inline-block";  // Show back button
+    }
+
+    function startQuiz() {
+      score = 0;
+      currentQuestionIndex = 0;
+      timer = 30;
+      document.getElementById("intro-container").style.display = "none";
+      document.getElementById("quiz-container").style.display = "block";
+      document.getElementById("timer").style.display = "block";
+      document.getElementById("score-container").textContent = "";
+      document.getElementById("restart-btn").style.display = "none";
+      document.getElementById("back-btn").style.display = "none";
+      loadQuestion();
+      startTimer();
+    }
+
+    function restartQuiz() {
+      clearInterval(timerInterval);  // Clear any existing timer
+      startQuiz();  // Restart the quiz
+    }
+
+    function goBack() {
+      window.location.href = "new.html";  // Redirect to new.html
+    }
+
+    document.getElementById("take-quiz-btn").onclick = startQuiz;
+    document.getElementById("restart-btn").onclick = restartQuiz;
+    document.getElementById("back-btn").onclick = goBack;
+
+  </script>
+
+</body>
+</html>

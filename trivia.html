@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Game for Kids</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      color: #333;
+    }
+
+    h1 {
+      color: #ff6347;
+      font-size: 2.5em;
+      margin-bottom: 1em;
+    }
+
+    #quiz-container {
+      background-color: #fff;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 500px;
+      text-align: center;
+      display: none; /* Initially hidden */
+    }
+
+    .question {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option {
+      background-color: #ffebcd;
+      padding: 1em;
+      border: 2px solid #ff6347;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      font-size: 1.2em;
+    }
+
+    .option:hover {
+      background-color: #ff6347;
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    .option.correct {
+      background-color: #32cd32;
+      color: #fff;
+    }
+
+    .option.incorrect {
+      background-color: #ff6347;
+      color: #fff;
+    }
+
+    #feedback {
+      font-size: 1.5em;
+      margin-top: 1em;
+      color: #32cd32;
+      visibility: hidden;
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .score {
+      font-size: 1.5em;
+      margin-top: 1.5em;
+      color: #ff6347;
+    }
+
+    .restart-btn,
+    .back-btn {
+      background-color: #ff6347;
+      color: #fff;
+      padding: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.2em;
+      margin-top: 1em;
+      transition: background-color 0.3s;
+    }
+
+    .restart-btn:hover,
+    .back-btn:hover {
+      background-color: #ff4500;
+    }
+
+    .start-btn {
+      background-color: #32cd32;
+      color: #fff;
+      padding: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.2em;
+      margin-top: 1em;
+      transition: background-color 0.3s;
+    }
+
+    .start-btn:hover {
+      background-color: #228b22;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎉 Fun Trivia Game 🎉</h1>
+
+  <button id="back-btn" class="back-btn" onclick="goBack()">Back</button>
+
+  <div id="quiz-container">
+    <div id="question-container" class="question"></div>
+    <div id="question-number" class="question-number"></div>
+    <div id="options-container" class="options"></div>
+    <div id="feedback"></div>
+    <div id="score-container" class="score"></div>
+    <button id="restart-btn" class="restart-btn" style="display: none;">Restart Game</button>
+  </div>
+
+  <button id="start-btn" class="start-btn">Let's Start</button>
+
+  <script>
+    const questions = [
+      { question: "What is the capital of France?", options: ["Berlin", "Madrid", "Paris", "Rome"], answer: "Paris" },
+      { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Venus"], answer: "Mars" },
+      { question: "What is the largest mammal?", options: ["Elephant", "Whale", "Giraffe", "Lion"], answer: "Whale" },
+      { question: "Which animal is known as the King of the Jungle?", options: ["Elephant", "Lion", "Tiger", "Bear"], answer: "Lion" },
+      { question: "How many continents are there?", options: ["5", "6", "7", "8"], answer: "7" },
+      { question: "Which is the smallest continent?", options: ["Africa", "Australia", "Asia", "Europe"], answer: "Australia" },
+      { question: "What is the hardest natural substance on Earth?", options: ["Gold", "Diamond", "Iron", "Platinum"], answer: "Diamond" },
+      { question: "Which ocean is the largest?", options: ["Atlantic", "Indian", "Pacific", "Arctic"], answer: "Pacific" },
+      { question: "How many days are there in a leap year?", options: ["365", "366", "364", "350"], answer: "366" },
+      { question: "Who invented the telephone?", options: ["Thomas Edison", "Nikola Tesla", "Alexander Graham Bell", "Albert Einstein"], answer: "Alexander Graham Bell" }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const questionContainer = document.getElementById("question-container");
+      const optionsContainer = document.getElementById("options-container");
+      const feedback = document.getElementById("feedback");
+      const questionNumber = document.getElementById("question-number");
+
+      const currentQuestion = questions[currentQuestionIndex];
+      questionContainer.textContent = currentQuestion.question;
+      questionNumber.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+
+      optionsContainer.innerHTML = "";
+      currentQuestion.options.forEach(option => {
+        const optionDiv = document.createElement("div");
+        optionDiv.textContent = option;
+        optionDiv.classList.add("option");
+        optionDiv.addEventListener("click", () => checkAnswer(option));
+        optionsContainer.appendChild(optionDiv);
+      });
+
+      feedback.style.visibility = "hidden";
+    }
+
+    function checkAnswer(selectedOption) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const feedback = document.getElementById("feedback");
+
+      const options = document.querySelectorAll(".option");
+      options.forEach(option => {
+        option.classList.remove("correct", "incorrect");
+        if (option.textContent === currentQuestion.answer) {
+          option.classList.add("correct");
+        }
+        if (option.textContent === selectedOption && selectedOption !== currentQuestion.answer) {
+          option.classList.add("incorrect");
+        }
+      });
+
+      if (selectedOption === currentQuestion.answer) {
+        score++;
+        feedback.textContent = "✅ Correct!";
+      } else {
+        feedback.textContent = "❌ Incorrect!";
+      }
+      feedback.style.visibility = "visible";
+
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        setTimeout(loadQuestion, 1000);
+      } else {
+        setTimeout(showFinalScore, 1000);
+      }
+    }
+
+    function showFinalScore() {
+      const scoreContainer = document.getElementById("score-container");
+      const restartBtn = document.getElementById("restart-btn");
+
+      scoreContainer.textContent = `Your Score: ${score} / ${questions.length}`;
+      restartBtn.style.display = "inline-block";
+      document.getElementById("back-btn").style.display = "inline-block"; // Show "Back" button on the score page
+    }
+
+    function restartGame() {
+      currentQuestionIndex = 0;
+      score = 0;
+      loadQuestion();
+      document.getElementById("score-container").textContent = "";
+      document.getElementById("restart-btn").style.display = "none";
+    }
+
+    function startGame() {
+      document.getElementById("start-btn").style.display = "none"; // Hide the start button
+      document.getElementById("quiz-container").style.display = "block"; // Show the quiz container
+      document.getElementById("back-btn").style.display = "none"; // Hide "Back" button during the game
+      loadQuestion();
+    }
+
+    function goBack() {
+      window.location.href = "game.html";
+    }
+
+    document.getElementById("restart-btn").addEventListener("click", restartGame);
+    document.getElementById("start-btn").addEventListener("click", startGame);
+  </script>
+
+</body>
+</html>

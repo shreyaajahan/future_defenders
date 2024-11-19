@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Child Safety Quiz for Kids</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #f7c3c3, #a1d6e2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-container {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff6f61;
+      margin-bottom: 15px;
+      font-size: 2.5em;
+    }
+
+    #score-display {
+      font-size: 1.5em;
+      color: #28a745;
+      font-weight: bold;
+      margin-bottom: 25px;
+    }
+
+    #question {
+      font-size: 2em;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    #timer {
+      font-size: 1.5em;
+      color: #ff6f61;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    #options {
+      margin-top: 15px;
+    }
+
+    .option-btn {
+      display: block;
+      background-color: #fef7f7;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .option-btn:hover {
+      background-color: #ffeed9;
+      color: #007bff;
+      border-color: #ffb833;
+    }
+
+    .option-btn.correct {
+      background-color: #d4edda;
+      border-color: #28a745;
+    }
+
+    .option-btn.incorrect {
+      background-color: #f8d7da;
+      border-color: #dc3545;
+    }
+
+    #feedback {
+      margin-top: 20px;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .progress-container {
+      background-color: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 25px;
+      height: 25px;
+      width: 100%;
+    }
+
+    #progress-bar {
+      background-color: #ff6f61;
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s;
+    }
+
+    #next-btn, #result button {
+      padding: 15px 30px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 25px;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    #next-btn:hover, #result button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      display: none;
+    }
+
+    #result h2 {
+      color: #333;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+    }
+
+    #result p {
+      font-size: 1.5em;
+      color: #28a745;
+    }
+
+    #back-btn {
+      padding: 15px 30px;
+      background-color: #6c757d;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    #back-btn:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Child Safety Quiz</h1>
+    <div id="score-display">Score: 0</div>
+    <div id="timer">Time Left: <span id="time">10</span>s</div>
+    <div id="quiz">
+      <div id="question-container">
+        <h2 id="question"></h2>
+        <div id="options">
+          <!-- Options will be dynamically generated here -->
+        </div>
+      </div>
+      <div id="feedback"></div>
+      <div class="progress-container">
+        <div id="progress-bar"></div>
+      </div>
+      <button id="next-btn" onclick="nextQuestion()">Next</button>
+    </div>
+    <div id="result">
+      <h2>Quiz Completed!</h2>
+      <p>Your Score: <span id="score"></span>/5</p>
+      <button onclick="restartQuiz()">Restart Quiz</button>
+      <button id="back-btn" onclick="goBack()">Back</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "If a stranger offers you a ride, what should you do?", options: ["Say thank you and accept", "Politely refuse and walk away", "Ask them for candy"], answer: 1 },
+      { question: "If you get lost in a public place, what should you do?", options: ["Cry loudly", "Look for a safe adult like a police officer", "Try to find your own way home"], answer: 1 },
+      { question: "Is it okay to give your address to someone you met online?", options: ["Yes", "No", "Only if they seem nice"], answer: 1 },
+      { question: "What should you do if a stranger tries to grab you?", options: ["Scream and run", "Stay quiet", "Go with them"], answer: 0 },
+      { question: "Who should know your emergency contact number?", options: ["Only you", "Trusted adults", "Everyone you meet"], answer: 1 }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let timer;
+    const timeLimit = 10;
+
+    function startTimer() {
+      let timeRemaining = timeLimit;
+      document.getElementById('time').innerText = timeRemaining;
+
+      timer = setInterval(() => {
+        timeRemaining--;
+        document.getElementById('time').innerText = timeRemaining;
+        if (timeRemaining === 0) {
+          clearInterval(timer);
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function showQuestion() {
+      const questionElement = document.getElementById('question');
+      const optionsContainer = document.getElementById('options');
+      const feedbackElement = document.getElementById('feedback');
+      feedbackElement.innerHTML = '';
+      questionElement.innerHTML = questions[currentQuestion].question;
+      optionsContainer.innerHTML = '';
+
+      questions[currentQuestion].options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.innerText = option;
+        button.classList.add('option-btn');
+        button.onclick = () => checkAnswer(index);
+        optionsContainer.appendChild(button);
+      });
+
+      document.getElementById('score-display').innerText = `Score: ${score}`;
+      updateProgressBar();
+      startTimer();
+      document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function checkAnswer(selected) {
+      clearInterval(timer);
+      const buttons = document.querySelectorAll('.option-btn');
+      const feedbackElement = document.getElementById('feedback');
+
+      if (selected === questions[currentQuestion].answer) {
+        buttons[selected].classList.add('correct');
+        feedbackElement.innerText = "Correct!";
+        score++;
+      } else {
+        buttons[selected].classList.add('incorrect');
+        buttons[questions[currentQuestion].answer].classList.add('correct');
+        feedbackElement.innerText = "Oops! That's incorrect.";
+      }
+
+      document.getElementById('score-display').innerText = `Score: ${score}`;
+      document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+      clearInterval(timer);
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgressBar() {
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.width = ((currentQuestion + 1) / questions.length) * 100 + '%';
+    }
+
+    function showResult() {
+      document.getElementById('quiz').style.display = 'none';
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('score').innerText = score;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      document.getElementById('quiz').style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+      showQuestion();
+    }
+
+    function goBack() {
+      window.location.href = "safety.html";
+    }
+
+    window.onload = showQuestion;
+  </script>
+</body>
+</html>

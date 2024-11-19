@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle Game</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(120deg, #FF7F50, #00BFFF, #32CD32);
+            overflow: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+            flex-direction: column;
+            color: #000; /* Default text color */
+        }
+
+        /* Game container styling */
+        .game-container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+            background-color: #ffffff;
+        }
+
+        h1 {
+            color: #ff5722;
+            font-size: 2.5em;
+            font-family: 'Comic Sans MS', sans-serif;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            margin: 20px auto;
+            justify-content: center;
+        }
+
+        .piece {
+            width: 100px;
+            height: 100px;
+            background-color: #ffeb3b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s;
+            border-radius: 8px;
+        }
+
+        .piece.correct {
+            background-color: #4CAF50 !important;
+        }
+
+        .piece.incorrect {
+            background-color: #ff4500 !important;
+        }
+
+        .piece:hover {
+            transform: scale(1.1);
+        }
+
+        .blinking {
+            animation: blink 0.5s alternate infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        .score-board {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0;
+            background-color: #4CAF50;
+            transition: width 0.3s;
+        }
+
+        .timer {
+            font-size: 1.5em;
+            color: #ff6347;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff6347;
+            color: white;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #e53e3e;
+            transform: scale(1.1);
+        }
+
+        /* Footer Styling */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        footer button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff6347;
+            color: white;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        footer button:hover {
+            background-color: #e53e3e;
+            transform: scale(1.1);
+        }
+
+        /* New styles for "You Won" message and sparklers */
+        .congratulations-message {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            color: #ffeb3b;
+            font-weight: bold;
+            text-shadow: 0 0 10px #fff, 0 0 20px #ff6347, 0 0 30px #ff6347;
+            z-index: 1000;
+            animation: sparkle 1s ease-in-out infinite alternate;
+        }
+
+        /* Sparkle effect */
+        @keyframes sparkle {
+            0% {
+                text-shadow: 0 0 10px #fff, 0 0 20px #ff6347, 0 0 30px #ff6347;
+            }
+            50% {
+                text-shadow: 0 0 10px #fff, 0 0 30px #ff6347, 0 0 40px #ff6347;
+            }
+            100% {
+                text-shadow: 0 0 10px #fff, 0 0 20px #ff6347, 0 0 30px #ff6347;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>Puzzle Game</h1>
+    <p>Arrange the pieces to complete the puzzle!</p>
+    <div class="timer">Time Left: <span id="timer">60</span> sec</div>
+    <div class="game-board" id="gameBoard"></div>
+    <div class="score-board">
+        <div>Score: <span id="score">0</span></div>
+        <div>Progress: <span id="progress">0</span>/9</div>
+    </div>
+    <div class="progress-bar">
+        <div id="progressBar" class="progress"></div>
+    </div>
+    <div class="controls">
+        <button onclick="giveHint()">Hint</button>
+    </div>
+</div>
+
+<div id="congratulationsMessage" class="congratulations-message">YOU WON!!</div>
+
+<!-- Footer with Back and Next buttons -->
+<footer>
+    <button onclick="goBack()">Back</button>
+    <button onclick="goNext()">Next</button>
+</footer>
+
+<script>
+    let score = 0;
+    let progress = 0;
+    let timeLeft = 60;
+    const totalPieces = 9;
+    const gameBoard = document.getElementById("gameBoard");
+    const scoreDisplay = document.getElementById("score");
+    const progressDisplay = document.getElementById("progress");
+    const progressBar = document.getElementById("progressBar");
+    const timerDisplay = document.getElementById("timer");
+
+    let pieces = [];
+    let currentOrder = [];
+
+    function createPuzzle() {
+        // Randomize the order of the pieces
+        currentOrder = Array.from({ length: totalPieces }, (_, i) => i + 1);
+        currentOrder = shuffleArray(currentOrder);
+
+        gameBoard.innerHTML = "";
+        pieces = currentOrder.map((piece, index) => {
+            const div = document.createElement("div");
+            div.classList.add("piece");
+            div.textContent = piece;
+            div.setAttribute("data-id", piece);
+            div.onclick = () => checkPiece(div);
+            gameBoard.appendChild(div);
+            return div;
+        });
+    }
+
+    // Shuffle the pieces randomly
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
+        }
+        return arr;
+    }
+
+    function checkPiece(piece) {
+        const expectedPiece = progress + 1;
+        if (parseInt(piece.textContent) === expectedPiece) {
+            piece.classList.add("correct");
+            score++;
+            progress++;
+            scoreDisplay.textContent = score;
+            progressDisplay.textContent = progress;
+            progressBar.style.width = (progress / totalPieces) * 100 + "%";
+            if (progress === totalPieces) {
+                showConfetti();
+            }
+        } else {
+            piece.classList.add("incorrect");
+        }
+    }
+
+    function giveHint() {
+        const hintPiece = pieces.find(piece => !piece.classList.contains("correct"));
+        if (hintPiece) {
+            hintPiece.classList.add("correct");
+            score++;
+            progress++;
+            scoreDisplay.textContent = score;
+            progressDisplay.textContent = progress;
+            progressBar.style.width = (progress / totalPieces) * 100 + "%";
+        }
+    }
+
+    function showConfetti() {
+        const message = document.getElementById("congratulationsMessage");
+        message.style.display = "block";
+        document.body.style.background = "linear-gradient(120deg, #ff6347, #ffeb3b)";
+        document.body.style.color = "#fff";
+    }
+
+    function goBack() {
+        window.location.href = "game.html";
+    }
+
+    function goNext() {
+        window.location.href = "memory-game.html";
+    }
+
+    function updateTimer() {
+        if (timeLeft > 0) {
+            timeLeft--;
+            timerDisplay.textContent = timeLeft;
+        } else {
+            alert("Time's up!");
+        }
+    }
+
+    setInterval(updateTimer, 1000);
+    createPuzzle();
+</script>
+</body>
+</html>

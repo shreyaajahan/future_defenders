@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Literacy Quiz for Kids</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #f2e9ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: #5f4b8b;
+            overflow: hidden;
+        }
+        .quiz-container {
+            width: 90%;
+            max-width: 750px;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: slideIn 1s ease-out;
+            position: relative;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #ff6f61;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        #question-count {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a47a3;
+            margin-bottom: 15px;
+        }
+        #question {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .option-button {
+            background-color: #ff6f61;
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-block;
+            width: 100%;
+            max-width: 300px;
+        }
+        .option-button:hover {
+            background-color: #d45c52;
+            transform: translateY(-3px);
+        }
+        #next-button, #back-button {
+            background-color: #4a90e2;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.4rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 20px;
+        }
+        #next-button {
+            right: 20px;
+        }
+        #back-button {
+            left: 20px;
+        }
+        #next-button:hover, #back-button:hover {
+            background-color: #3581d8;
+        }
+        .quiz-section, .results-section {
+            display: none;
+        }
+        #answer-feedback {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        .quiz-section .option-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #start-button {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.4rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #start-button:hover {
+            background-color: #218838;
+        }
+        /* For mobile responsiveness */
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 20px;
+            }
+            .option-button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1>Know About Legal Leaders!</h1>
+
+        <div id="question-count">Question 1 of 10</div>
+
+        <section id="start-section">
+            <h2>Are you ready to learn about Dr. Ambedkar and Ram Jethmalani?</h2>
+            <button id="start-button" onclick="startQuiz()">Let's Start!</button>
+        </section>
+        
+        <section id="quiz-section" class="quiz-section">
+            <p id="question"></p>
+            <div id="options" class="option-buttons"></div>
+            <p id="answer-feedback"></p>
+            <button id="next-button" onclick="nextQuestion()">Next Question</button>
+        </section>
+
+        <section id="results" class="results-section">
+            <h2>Quiz Completed!</h2>
+            <p id="score"></p> <!-- The score will be displayed here -->
+        </section>
+    </div>
+
+    <button id="back-button" onclick="goBack()">Back</button>
+
+    <script>
+        const questions = [
+            {
+                question: "Dr. B.R. Ambedkar is known as the 'Father of the Indian ________'.",
+                options: ["Economy", "Constitution", "Government"],
+                answer: "Constitution"
+            },
+            {
+                question: "Dr. Ambedkar fought for equal rights for all people, regardless of their ________.",
+                options: ["age", "caste", "height"],
+                answer: "caste"
+            },
+            {
+                question: "Dr. Ambedkar was one of the first in his community to attend ________ in the United States.",
+                options: ["college", "high school", "drama classes"],
+                answer: "college"
+            },
+            {
+                question: "Dr. Ambedkar strongly supported education because he believed it would bring ________ to people.",
+                options: ["knowledge", "food", "wealth"],
+                answer: "knowledge"
+            },
+            {
+                question: "Dr. Ambedkar’s birthday, April 14, is celebrated in India as ________ Day.",
+                options: ["Republic", "Ambedkar Jayanti", "Freedom"],
+                answer: "Ambedkar Jayanti"
+            },
+            // Ram Jethmalani questions
+            {
+                question: "Ram Jethmalani was a famous ________ in India.",
+                options: ["Scientist", "Lawyer", "Doctor"],
+                answer: "Lawyer"
+            },
+            {
+                question: "Jethmalani was known for his contributions to ________ law in India.",
+                options: ["Criminal", "Corporate", "Family"],
+                answer: "Criminal"
+            },
+            {
+                question: "Ram Jethmalani served as India's ________ Minister.",
+                options: ["Defense", "Law", "Finance"],
+                answer: "Law"
+            },
+            {
+                question: "Ram Jethmalani started his career as a lawyer at the age of ________.",
+                options: ["17", "21", "25"],
+                answer: "17"
+            },
+            {
+                question: "Jethmalani was also a member of the ________ of India.",
+                options: ["Army", "Parliament", "Film Industry"],
+                answer: "Parliament"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startQuiz() {
+            document.getElementById("start-section").style.display = "none";
+            document.getElementById("quiz-section").style.display = "block";
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const questionData = questions[currentQuestionIndex];
+            document.getElementById("question").textContent = questionData.question;
+            document.getElementById("question-count").textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = '';
+            questionData.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById("answer-feedback").style.display = "none";
+            document.getElementById("next-button").style.display = "block"; // Always show next button
+        }
+
+        function checkAnswer(selectedOption) {
+            const correctAnswer = questions[currentQuestionIndex].answer;
+            const feedback = document.getElementById("answer-feedback");
+
+            if (selectedOption === correctAnswer) {
+                score++;
+                feedback.textContent = "Correct!";
+                feedback.style.color = "#28a745";
+            } else {
+                feedback.textContent = "Oops! That's incorrect.";
+                feedback.style.color = "#dc3545";
+            }
+
+            feedback.style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById("quiz-section").style.display = "none";
+            document.getElementById("results").style.display = "block";
+            document.getElementById("score").textContent = `Your score is ${score} out of ${questions.length}.`;
+        }
+
+        function goBack() {
+            window.location.href = "new.html";
+        }
+    </script>
+</body>
+</html>

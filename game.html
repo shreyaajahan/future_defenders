@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Game Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        header {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 2.5em;
+            border-bottom: 5px solid #ffeb3b;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+        }
+
+        nav {
+            background: #333;
+            overflow: hidden;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        nav ul li {
+            flex: 1;
+            text-align: center;
+        }
+
+        nav a {
+            display: block;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            background-color: rgba(76, 175, 80, 0.8);
+            transform: scale(1.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff6347;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4CAF50;
+            margin-top: 10px; /* Space above the tag */
+        }
+        
+        .game-category {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ff6347;
+            border-radius: 10px;
+        }
+
+        .game-button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: #ff6347;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .game-button:hover {
+            background-color: #ff4500;
+        }
+
+        .level-block {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #ffeb3b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .level-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 5px;
+            background: #ffeb3b;
+            margin: 10px auto;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            transition: transform 0.3s;
+        }
+
+        .feature img {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            transition: transform 0.3s;
+        }
+
+        .feature img:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        FUTURE DEFENDERS
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="homepage.html">Home</a></li>
+            <li><a href="teena.html">Sessions</a></li>
+            <li><a href="new.html">Library</a></li>
+            <li><a href="game.html">Play</a></li>
+        </ul>
+    </nav>
+
+    <h1>Welcome to Kids Game Hub</h1>
+    
+    <div class="game-category level-block">
+        <h2>Puzzle Games</h2>
+        <p>Challenge your logic and problem-solving skills!</p>
+        <a href="puzzles.html" class="game-button" onclick="startPuzzleGame()">Play Puzzle Game</a>
+    </div>
+
+    <!-- Replacing Adventure Games with Memory Games -->
+    <div class="game-category level-block">
+        <h2>Memory Games</h2>
+        <p>Improve your memory and concentration!</p>
+        <a href="memory-game.html" class="game-button" onclick="startMemoryGame()">Play Memory Game</a>
+    </div>
+
+    <div class="game-category level-block">
+        <h2>Educational Trivia</h2>
+        <p>Test your knowledge with fun quizzes!</p>
+        <a href="trivia.html" class="game-button" onclick="startTriviaGame()">Play Trivia Game</a>
+    </div>
+
+    <div class="game-category level-block">
+        <h2>Creative Arts and Crafts</h2>
+        <p>Express your creativity through art!</p>
+        <a href="arts.html" class="game-button" onclick="startArtsAndCraftsGame()">Play Arts and Crafts Game</a>
+    </div>
+
+</body>
+</html>

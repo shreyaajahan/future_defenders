@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Labour Awareness Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffe7cc, #f0f8ff);
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        h1 {
+            color: #c04848;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+        .quiz-container {
+            border: 3px solid #c04848;
+            padding: 20px;
+            border-radius: 20px;
+            background-color: #ffffff;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        .question {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #c04848;
+        }
+        .options button {
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 2px solid #c04848;
+            background-color: #ffe7cc;
+            color: #333;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .options button:hover {
+            transform: scale(1.1);
+            background-color: #ffcba4;
+        }
+        .options button i {
+            margin-right: 10px;
+            color: #c04848;
+        }
+        .correct {
+            background-color: #28a745 !important;
+            color: white;
+        }
+        .incorrect {
+            background-color: #dc3545 !important;
+            color: white;
+        }
+        #score-container {
+            display: none;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 20px;
+        }
+        .btn-primary, .btn-secondary {
+            background-color: #c04848;
+            border: none;
+        }
+        .btn-primary:hover, .btn-secondary:hover {
+            background-color: #ffcba4;
+        }
+        .progress {
+            height: 25px;
+        }
+        .progress-bar {
+            background-color: #c04848;
+        }
+        .timer {
+            font-size: 1.4rem;
+            color: #c04848;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Child Labour Awareness Quiz</h1>
+    <p class="lead">Learn about the importance of education and why every child deserves to be free from labor.</p>
+
+    <div class="progress mb-4">
+        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <div id="quiz-container" class="quiz-container mt-4">
+        <div id="question" class="question"></div>
+        <div id="options" class="options d-flex flex-column"></div>
+        
+        <!-- Next Button -->
+        <button id="next-btn" class="btn btn-primary mt-4" onclick="nextQuestion()">Next Question</button>
+    </div>
+
+    <div id="score-container" class="mt-4">
+        <h3 id="score" class="score"></h3>
+        
+        <!-- Play Again Button -->
+        <button class="btn btn-success mt-3" onclick="restartQuiz()">Play Again</button>
+        
+        <!-- Back Button to navigate to childlabour.html -->
+        <button class="btn btn-secondary mt-3" onclick="goBackToPage()">Back</button>
+    </div>
+
+    <div id="timer" class="timer">Time Left: <span id="time-left">60</span> seconds</div>
+</div>
+
+<audio id="correct-sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+<audio id="incorrect-sound" src="https://www.soundjay.com/button/beep-10.wav"></audio>
+
+<script>
+    const questions = [
+        { question: "What is child labour?", options: ["Helping at home", "Working instead of going to school", "Playing games", "Reading books"], answer: 1 },
+        { question: "What is a child’s right?", options: ["To work", "To get an education", "To cook", "To earn money"], answer: 1 },
+        { question: "Why is child labour harmful?", options: ["It prevents learning", "It’s fun", "It makes kids rich", "It’s safe"], answer: 0 },
+        { question: "How can children grow best?", options: ["By working", "Through education and play", "By being alone", "By working in factories"], answer: 1 },
+        { question: "Is child labour legal?", options: ["Yes", "No", "Only for some kids", "It depends"], answer: 1 },
+        { question: "Where should children be?", options: ["At school", "At work", "In factories", "In offices"], answer: 0 },
+        { question: "Who is responsible for protecting children?", options: ["The government", "The children themselves", "Other children", "No one"], answer: 0 },
+        { question: "What age is considered safe for kids to work?", options: ["Any age", "After 18", "At 10", "No specific age"], answer: 1 },
+        { question: "Why is education important?", options: ["It helps children succeed", "It’s boring", "It’s tiring", "It’s unnecessary"], answer: 0 },
+        { question: "What should you do if you see child labour?", options: ["Ignore it", "Report it", "Encourage it", "Join them"], answer: 1 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 60;
+
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById("score-container").style.display = "none";
+        document.getElementById("quiz-container").style.display = "block";
+        document.getElementById("progress-bar").style.width = "0%";
+        document.getElementById("timer").style.display = "block";
+        showQuestion();
+        startTimer();
+    }
+
+    function showQuestion() {
+        const questionContainer = document.getElementById("question");
+        const optionsContainer = document.getElementById("options");
+        questionContainer.innerHTML = questions[currentQuestionIndex].question;
+        optionsContainer.innerHTML = "";
+
+        questions[currentQuestionIndex].options.forEach((option, index) => {
+            const button = document.createElement("button");
+            button.classList.add("btn", "mb-2", "d-flex", "align-items-center");
+            button.innerHTML = option;
+            button.onclick = () => selectAnswer(index);
+            optionsContainer.appendChild(button);
+        });
+
+        updateProgress();
+    }
+
+    function selectAnswer(selectedIndex) {
+        const correctSound = document.getElementById("correct-sound");
+        const incorrectSound = document.getElementById("incorrect-sound");
+        const options = document.querySelectorAll(".options button");
+
+        options.forEach((button, index) => {
+            if (index === questions[currentQuestionIndex].answer) {
+                button.classList.add("correct");
+            } else if (index === selectedIndex) {
+                button.classList.add("incorrect");
+            }
+            button.disabled = true;
+        });
+
+        if (selectedIndex === questions[currentQuestionIndex].answer) {
+            correctSound.play();
+            score++;
+        } else {
+            incorrectSound.play();
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            showQuestion();
+        } else {
+            endQuiz();
+        }
+    }
+
+    function updateProgress() {
+        const progressBar = document.getElementById("progress-bar");
+        const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+        progressBar.style.width = progress + "%";
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(function() {
+            timeLeft--;
+            document.getElementById("time-left").innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                endQuiz();
+            }
+        }, 1000);
+    }
+
+    function endQuiz() {
+        document.getElementById("quiz-container").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+        const scoreContainer = document.getElementById("score-container");
+        scoreContainer.style.display = "block";
+        document.getElementById("score").innerText = `You scored ${score} out of ${questions.length}!`;
+    }
+
+    function restartQuiz() {
+        timeLeft = 60;
+        startQuiz();
+    }
+
+    function goBackToPage() {
+        window.location.href = "new.html";
+    }
+
+    startQuiz();
+</script>
+
+</body>
+</html>

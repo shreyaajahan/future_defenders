@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Future Defenders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('file:///C:/Users/ttedu/OneDrive/Desktop/java%20macro/macro%20pro%20images/g3.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #333;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        header {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 2.5em;
+            border-bottom: 5px solid #ffeb3b;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            text-transform: uppercase;
+        }
+
+        nav {
+            background: #333;
+            overflow: hidden;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        nav ul li {
+            flex: 1;
+            text-align: center;
+        }
+
+        nav a {
+            display: block;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        nav a:hover {
+            background-color: rgba(76, 175, 80, 0.8);
+            transform: scale(1.1);
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .level-block {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #ffeb3b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .level-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        h2 {
+            color: #4CAF50;
+            text-align: center;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 5px;
+            background: #ffeb3b;
+            margin: 10px auto;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            transition: transform 0.3s;
+        }
+
+        .feature img {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            transition: transform 0.3s;
+        }
+
+        .feature img:hover {
+            transform: scale(1.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(51, 51, 51, 0.9);
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin: 10px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.5em;
+            color: #333;
+            transition: transform 0.3s;
+        }
+
+        .badge:hover {
+            transform: scale(1.1);
+        }
+
+        .feature {
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .feature:nth-child(1) { animation-delay: 0.2s; }
+        .feature:nth-child(2) { animation-delay: 0.4s; }
+        .feature:nth-child(3) { animation-delay: 0.6s; }
+
+        /* New styles for animation */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .badge {
+            animation: bounce 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Future Defenders
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="homepage.html">Home</a></li>
+            <li><a href="teena.html">Sessions</a></li>
+            <li><a href="new.html">Library</a></li>
+            <li><a href="game.html">Play</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="sessions" class="level-block">
+            <h2>Primary Level</h2>
+            <div class="feature">
+                <img src="https://img.icons8.com/ios-filled/60/4CAF50/learning.png" alt="Learning Icon"/>
+                <p>Embark on your adventure by learning basic concepts that will help you become a Future Defender!</p>
+            </div>
+            <div class="feature">
+                <img src="https://img.icons8.com/ios-filled/60/4CAF50/book.png" alt="Book Icon"/>
+                <p>Read exciting stories that inspire creativity and critical thinking!</p>
+            </div>
+        </section>
+
+        <section id="library" class="level-block">
+            <h2>Secondary Level</h2>
+            <div class="feature">
+                <img src="https://img.icons8.com/ios-filled/60/4CAF50/books.png" alt="Library Icon"/>
+                <p>Explore our library filled with fun books and resources to deepen your knowledge!</p>
+            </div>
+            <div class="feature">
+                <img src="https://img.icons8.com/ios-filled/60/4CAF50/quiz.png" alt="Quiz Icon"/>
+                <p>Take quizzes to test your understanding and earn fun badges!</p>
+            </div>
+        </section>
+
+        <section id="play" class="level-block">
+            <h2>Final Level</h2>
+            <div class="feature">
+                <img src="https://img.icons8.com/ios-filled/60/4CAF50/controller.png" alt="Game Controller Icon"/>
+                <p>Challenge yourself with fun games and quizzes to test your skills!</p>
+            </div>
+            <div class="feature">
+                <img src="https://img.icons8.com/ios-filled/60/4CAF50/controller.png" alt="Game Controller Icon"/>
+                <p>Challenge yourself with fun games and quizzes to test your skills!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2024 Future Defenders. All rights reserved.
+    </footer>
+</body>
+</html>

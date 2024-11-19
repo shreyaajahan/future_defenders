@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bullying Awareness Quiz for Kids</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #d9f8d8, #eaffea);
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        h1 {
+            color: #2b7a3e;
+        }
+        .quiz-container {
+            border: 3px solid #2b7a3e;
+            padding: 20px;
+            border-radius: 20px;
+            background-color: #ffffff;
+            max-width: 600px;
+            margin: auto;
+            display: none;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        .question {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #2b7a3e;
+        }
+        .options button {
+            font-size: 1.1rem;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 2px solid #2b7a3e;
+            background-color: #d9f8d8;
+            color: #333;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .options button i {
+            margin-right: 10px;
+            color: #2b7a3e;
+        }
+        .options button:hover {
+            transform: scale(1.1);
+            background-color: #a8e6a1;
+        }
+        .correct {
+            background-color: #28a745 !important;
+            color: white;
+        }
+        .incorrect {
+            background-color: #dc3545 !important;
+            color: white;
+        }
+        #score-container {
+            display: none;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 20px;
+        }
+        .btn-primary {
+            background-color: #2b7a3e;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #a8e6a1;
+        }
+        .progress {
+            height: 25px;
+        }
+        .progress-bar {
+            background-color: #2b7a3e;
+        }
+        .timer {
+            font-size: 1.3rem;
+            color: #2b7a3e;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Bullying Awareness Quiz for Kids</h1>
+    <p class="lead">Learn more about bullying and how to handle it!</p>
+
+    <div class="progress mb-4">
+        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <div id="quiz-container" class="quiz-container mt-4">
+        <div id="question" class="question"></div>
+        <div id="options" class="options d-flex flex-column"></div>
+        <button id="next-btn" class="btn btn-primary mt-4" onclick="nextQuestion()">Next Question</button>
+    </div>
+
+    <div id="score-container" class="mt-4">
+        <h3 id="score" class="score"></h3>
+        <button class="btn btn-success mt-3" onclick="restartQuiz()">Play Again</button>
+        <button class="btn btn-secondary mt-3" onclick="window.location.href='bully.html'">Back</button>
+    </div>
+
+    <div id="timer" class="timer">Time Left: <span id="time-left">60</span> seconds</div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "What should you do if you see someone being bullied?",
+            options: [
+                { text: "Join in and tease the person", icon: "fas fa-gavel" },
+                { text: "Ignore it and walk away", icon: "fas fa-user-shield" },
+                { text: "Tell a teacher or adult", icon: "fas fa-balance-scale" },
+                { text: "Take a video of it on your phone", icon: "fas fa-mobile-alt" }
+            ],
+            answer: 2
+        },
+        {
+            question: "Is it okay to make fun of someone because they look different?",
+            options: [
+                { text: "Yes, if you think it's funny", icon: "fas fa-grin-squint" },
+                { text: "No, it’s hurtful and could be considered bullying", icon: "fas fa-exclamation-circle" },
+                { text: "Only if other people are also laughing", icon: "fas fa-users" },
+                { text: "Yes, if the person doesn’t mind", icon: "fas fa-smile" }
+            ],
+            answer: 1
+        },
+        {
+            question: "What is cyberbullying?",
+            options: [
+                { text: "Bullying that happens only at school", icon: "fas fa-school" },
+                { text: "Bullying that happens online or through messages", icon: "fas fa-laptop" },
+                { text: "Playing games with friends online", icon: "fas fa-gamepad" },
+                { text: "Helping others online", icon: "fas fa-hands-helping" }
+            ],
+            answer: 1
+        },
+        {
+            question: "If you’re being bullied, who is a good person to talk to for help?",
+            options: [
+                { text: "A trusted adult, like a teacher or parent", icon: "fas fa-user-tie" },
+                { text: "No one, just ignore it", icon: "fas fa-eye-slash" },
+                { text: "The bully", icon: "fas fa-user-alt-slash" },
+                { text: "A random stranger", icon: "fas fa-question-circle" }
+            ],
+            answer: 0
+        },
+        {
+            question: "Is it legal to bully someone online?",
+            options: [
+                { text: "Yes, if it’s just a joke", icon: "fas fa-laugh-squint" },
+                { text: "No, bullying can have serious consequences, even online", icon: "fas fa-gavel" },
+                { text: "Yes, as long as no one sees it", icon: "fas fa-eye-slash" },
+                { text: "It depends on the situation", icon: "fas fa-question" }
+            ],
+            answer: 1
+        },
+        {
+            question: "What can you do to support someone who’s been bullied?",
+            options: [
+                { text: "Ignore them", icon: "fas fa-user-alt-slash" },
+                { text: "Tell them it's their fault", icon: "fas fa-exclamation" },
+                { text: "Offer to listen and be a friend", icon: "fas fa-hands-helping" },
+                { text: "Laugh at them", icon: "fas fa-laugh" }
+            ],
+            answer: 2
+        },
+        {
+            question: "What should you do if you're feeling hurt after being bullied?",
+            options: [
+                { text: "Bottle up your feelings", icon: "fas fa-bottle" },
+                { text: "Talk to someone you trust", icon: "fas fa-user-friends" },
+                { text: "Take revenge", icon: "fas fa-fist-raised" },
+                { text: "Ignore the feelings", icon: "fas fa-smile-beam" }
+            ],
+            answer: 1
+        },
+        {
+            question: "How can you be an ally to someone who is bullied?",
+            options: [
+                { text: "Laugh at the bully's jokes", icon: "fas fa-laugh" },
+                { text: "Report it and support the victim", icon: "fas fa-bullhorn" },
+                { text: "Avoid the person being bullied", icon: "fas fa-ban" },
+                { text: "Tell the bully they’re funny", icon: "fas fa-laugh-squint" }
+            ],
+            answer: 1
+        },
+        {
+            question: "What is one way to prevent bullying?",
+            options: [
+                { text: "Make fun of others before they can make fun of you", icon: "fas fa-grin-tongue" },
+                { text: "Be kind and inclusive to everyone", icon: "fas fa-hand-holding-heart" },
+                { text: "Avoid making any new friends", icon: "fas fa-friends" },
+                { text: "Stand up for the bully", icon: "fas fa-shield-alt" }
+            ],
+            answer: 1
+        },
+        {
+            question: "Why is it important to speak up about bullying?",
+            options: [
+                { text: "To get others in trouble", icon: "fas fa-ban" },
+                { text: "To create a safe environment for everyone", icon: "fas fa-users" },
+                { text: "To make yourself popular", icon: "fas fa-crown" },
+                { text: "To be the center of attention", icon: "fas fa-star" }
+            ],
+            answer: 1
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timeLeft = 60;
+    let timer;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showQuestion();
+        startTimer();
+    });
+
+    function showQuestion() {
+        const questionData = questions[currentQuestionIndex];
+        const questionText = document.getElementById("question");
+        const optionsContainer = document.getElementById("options");
+        const progressBar = document.getElementById("progress-bar");
+
+        questionText.innerText = questionData.question;
+
+        optionsContainer.innerHTML = '';
+        questionData.options.forEach((option, index) => {
+            const optionButton = document.createElement("button");
+            optionButton.innerHTML = `<i class="${option.icon}"></i> ${option.text}`;
+            optionButton.classList.add("btn", "w-100");
+            optionButton.addEventListener("click", () => checkAnswer(index));
+            optionsContainer.appendChild(optionButton);
+        });
+
+        const progress = (currentQuestionIndex / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        document.getElementById("quiz-container").style.display = 'block';
+    }
+
+    function checkAnswer(selectedOption) {
+        const questionData = questions[currentQuestionIndex];
+        if (selectedOption === questionData.answer) {
+            score++;
+        }
+
+        const buttons = document.querySelectorAll(".options button");
+        buttons.forEach((button, index) => {
+            if (index === questionData.answer) {
+                button.classList.add("correct");
+            } else {
+                button.classList.add("incorrect");
+            }
+            button.disabled = true;
+        });
+
+        if (currentQuestionIndex === questions.length - 1) {
+            clearInterval(timer);
+            setTimeout(showScore, 1000);
+        } else {
+            document.getElementById("next-btn").disabled = false;
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        showQuestion();
+        document.getElementById("next-btn").disabled = true;
+    }
+
+    function showScore() {
+        document.getElementById("quiz-container").style.display = 'none';
+        document.getElementById("score-container").style.display = 'block';
+        document.getElementById("score").innerText = `You scored ${score} out of ${questions.length}`;
+    }
+
+    function restartQuiz() {
+        score = 0;
+        currentQuestionIndex = 0;
+        timeLeft = 60;
+        document.getElementById("score-container").style.display = 'none';
+        showQuestion();
+        startTimer();
+    }
+
+    function startTimer() {
+        timer = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                document.getElementById("time-left").innerText = timeLeft;
+            } else {
+                clearInterval(timer);
+                showScore();
+            }
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>

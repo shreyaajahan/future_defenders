@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Literacy Quiz for Kids</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffebcc, #ffb3b3);
+            font-family: 'Fredoka One', sans-serif;
+            color: #333;
+        }
+
+        h1 {
+            color: #ff6347;
+        }
+
+        .quiz-container {
+            border: 3px solid #ff6347;
+            padding: 20px;
+            border-radius: 20px;
+            background-color: #ffffff;
+            max-width: 600px;
+            margin: auto;
+            display: none;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .question {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #ff6347;
+        }
+
+        .options button {
+            transition: transform 0.2s ease;
+            font-size: 1.2rem;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border: none;
+            background-color: #ffebcd;
+            color: #333;
+        }
+
+        .options button:hover {
+            transform: scale(1.1);
+            background-color: #f7c9b4;
+        }
+
+        .correct {
+            background-color: #28a745 !important;
+            color: white;
+        }
+
+        .incorrect {
+            background-color: #dc3545 !important;
+            color: white;
+        }
+
+        .circle, .square, .triangle, .cone {
+            margin: 10px auto;
+            font-size: 1.2rem;
+            padding: 10px;
+            text-align: center;
+            color: #333;
+        }
+
+        .circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #ff6347;
+        }
+
+        .square {
+            width: 80px;
+            height: 80px;
+            background-color: #28a745;
+        }
+
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 80px solid #ffc107;
+        }
+
+        .cone {
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-top: 80px solid #6f42c1;
+        }
+
+        #score-container {
+            display: none;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: #ff6347;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #f7c9b4;
+        }
+
+        .progress {
+            height: 25px;
+        }
+
+        .progress-bar {
+            background-color: #ff6347;
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            color: #ff6347;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Environmental Rights Quiz for Kids</h1>
+    <p class="lead">Test your knowledge on environmental protection!</p>
+
+    <div class="progress mb-4">
+        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <div id="quiz-container" class="quiz-container mt-4">
+        <div id="question" class="question"></div>
+        <div id="options" class="options d-flex flex-column"></div>
+        <button id="next-btn" class="btn btn-primary mt-4" onclick="nextQuestion()">Next Question</button>
+    </div>
+
+    <div id="score-container" class="mt-4">
+        <h3 id="score" class="score"></h3>
+        <button class="btn btn-success mt-3" onclick="restartQuiz()">Play Again</button>
+        <button class="btn btn-secondary mt-3" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="timer" class="timer">Time Left: <span id="time-left">60</span> seconds</div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "What should we do if we see someone throwing trash in a park?",
+            options: ["Ignore it", "Tell someone", "Join them", "Pick it up ourselves"],
+            answer: 1
+        },
+        {
+            question: "Which of these helps protect the environment?",
+            options: ["Littering", "Recycling", "Using plastic bags", "Cutting down trees"],
+            answer: 1
+        },
+        {
+            question: "What is a way to save water?",
+            options: ["Leave the tap running", "Use a bucket for washing", "Wash clothes in a river", "Waste water on purpose"],
+            answer: 1
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 60;
+
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById("score-container").style.display = "none";
+        document.getElementById("quiz-container").style.display = "block";
+        document.getElementById("progress-bar").style.width = "0%";
+        document.getElementById("timer").style.display = "block";
+        showQuestion();
+        startTimer();
+    }
+
+    function showQuestion() {
+        const questionContainer = document.getElementById("question");
+        const optionsContainer = document.getElementById("options");
+
+        questionContainer.innerHTML = questions[currentQuestionIndex].question;
+        optionsContainer.innerHTML = "";
+
+        questions[currentQuestionIndex].options.forEach((option, index) => {
+            const button = document.createElement("button");
+            button.classList.add("btn", "btn-outline-primary", "mb-2");
+            button.innerHTML = getShape(index) + " " + option;
+            button.onclick = () => selectAnswer(index);
+            optionsContainer.appendChild(button);
+        });
+
+        updateProgress();
+    }
+
+    function getShape(index) {
+        if (index === 0) return '<div class="circle"></div>';
+        if (index === 1) return '<div class="square"></div>';
+        if (index === 2) return '<div class="triangle"></div>';
+        if (index === 3) return '<div class="cone"></div>';
+    }
+
+    function selectAnswer(selectedIndex) {
+        const options = document.querySelectorAll(".options button");
+        options.forEach((button, index) => {
+            if (index === questions[currentQuestionIndex].answer) {
+                button.classList.add("correct");
+            } else if (index === selectedIndex) {
+                button.classList.add("incorrect");
+            }
+            button.disabled = true;
+        });
+
+        if (selectedIndex === questions[currentQuestionIndex].answer) {
+            score++;
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            showQuestion();
+        } else {
+            endQuiz();
+        }
+    }
+
+    function updateProgress() {
+        const progressBar = document.getElementById("progress-bar");
+        const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+        progressBar.style.width = progress + "%";
+    }
+
+    function startTimer() {
+        timer = setInterval(function() {
+            timeLeft--;
+            document.getElementById("time-left").innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                endQuiz();
+            }
+        }, 1000);
+    }
+
+    function endQuiz() {
+        document.getElementById("quiz-container").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+        const scoreContainer = document.getElementById("score-container");
+        scoreContainer.style.display = "block";
+        document.getElementById("score").innerText = `You scored ${score} out of ${questions.length}!`;
+    }
+
+    function restartQuiz() {
+        startQuiz();
+    }
+
+    function goBack() {
+        window.location.href = "environment.html";
+    }
+
+    startQuiz();
+</script>
+
+</body>
+</html>

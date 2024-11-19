@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Right to Education Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Background and basic styling */
+        body {
+            background: linear-gradient(135deg, #7b4397, #dc2430);
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Header styling */
+        h1 {
+            font-size: 2.2rem;
+            color: #ffe600;
+        }
+
+        .lead {
+            color: #e2e2e2;
+        }
+
+        /* Progress bar styling */
+        .progress {
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: #4caf50;
+            transition: width 0.5s;
+        }
+
+        /* Timer styling */
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffeb3b;
+        }
+
+        /* Question styling */
+        .question {
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        /* Option buttons */
+        .options button {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px 0;
+            transition: background-color 0.3s, transform 0.2s;
+            display: block;
+        }
+
+        .options button:hover {
+            background-color: #4caf50;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .correct {
+            background-color: #4caf50;
+            color: #fff;
+        }
+
+        .incorrect {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        /* Score display */
+        #score-container {
+            display: none;
+        }
+
+        /* Confetti styling */
+        .confetti {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .confetti div {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffe600;
+            opacity: 0.9;
+            animation: fall 2s linear infinite;
+        }
+
+        @keyframes fall {
+            from { transform: translateY(-20px); opacity: 1; }
+            to { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Right to Education Quiz for Kids</h1>
+    <p class="lead">Learn about your right to education through this fun quiz!</p>
+
+    <div class="progress mb-4">
+        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <div id="quiz-container" class="quiz-container mt-4">
+        <div id="question" class="question"></div>
+        <div id="options" class="options d-flex flex-column"></div>
+        <button id="next-btn" class="btn btn-primary mt-4" onclick="nextQuestion()">Next Question</button>
+    </div>
+
+    <div id="score-container" class="mt-4">
+        <h3 id="score" class="score"></h3>
+        <button class="btn btn-success mt-3" onclick="restartQuiz()">Play Again</button>
+        <a href="know_your_rights.html" class="btn btn-secondary mt-3 ms-2">Back</a>
+        <a href="childlabour.html" class="btn btn-warning mt-3 ms-2">Next</a> <!-- New Next button -->
+    </div>
+
+    <div id="timer" class="timer">Time Left: <span id="time-left">60</span> seconds</div>
+    <div class="confetti">
+        <div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div>
+    </div>
+</div>
+
+<audio id="correct-sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+<audio id="incorrect-sound" src="https://www.soundjay.com/button/beep-10.wav"></audio>
+
+<script>
+    const questions = [
+        { question: "What is the Right to Education?", options: ["Go to park", "Learn at school", "Watch TV", "Eat snacks"], answer: 1 },
+        { question: "Who has this right?", options: ["All children", "Adults", "Only teachers", "Rich people"], answer: 0 },
+        { question: "Education age group?", options: ["4-8", "6-14", "Adults", "Any age"], answer: 1 },
+        { question: "Where to exercise this right?", options: ["Schools", "Parks", "Home", "Playgrounds"], answer: 0 },
+        { question: "Why important?", options: ["Watch cartoons", "Gain knowledge", "Play games", "Sleep"], answer: 1 },
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 60;
+
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById("score-container").style.display = "none";
+        document.getElementById("quiz-container").style.display = "block";
+        document.getElementById("progress-bar").style.width = "0%";
+        document.getElementById("timer").style.display = "block";
+        showQuestion();
+        startTimer();
+    }
+
+    function showQuestion() {
+        const questionContainer = document.getElementById("question");
+        const optionsContainer = document.getElementById("options");
+        questionContainer.innerHTML = questions[currentQuestionIndex].question;
+        optionsContainer.innerHTML = "";
+
+        questions[currentQuestionIndex].options.forEach((option, index) => {
+            const button = document.createElement("button");
+            button.classList.add("btn", "mb-2", "d-flex", "align-items-center");
+            button.innerHTML = option;
+            button.onclick = () => selectAnswer(index);
+            optionsContainer.appendChild(button);
+        });
+        updateProgress();
+    }
+
+    function selectAnswer(selectedIndex) {
+        const correctSound = document.getElementById("correct-sound");
+        const incorrectSound = document.getElementById("incorrect-sound");
+        const options = document.querySelectorAll(".options button");
+
+        options.forEach((button, index) => {
+            if (index === questions[currentQuestionIndex].answer) {
+                button.classList.add("correct");
+            } else if (index === selectedIndex) {
+                button.classList.add("incorrect");
+            }
+            button.disabled = true;
+        });
+
+        if (selectedIndex === questions[currentQuestionIndex].answer) {
+            correctSound.play();
+            score++;
+        } else {
+            incorrectSound.play();
+        }
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            showQuestion();
+        } else {
+            endQuiz();
+        }
+    }
+
+    function updateProgress() {
+        const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+        document.getElementById("progress-bar").style.width = `${progress}%`;
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            if (timeLeft > 0) {
+                document.getElementById("time-left").innerText = timeLeft;
+                timeLeft--;
+            } else {
+                endQuiz();
+            }
+        }, 1000);
+    }
+
+    function endQuiz() {
+        clearInterval(timer);
+        document.getElementById("quiz-container").style.display = "none";
+        document.getElementById("score-container").style.display = "block";
+        document.getElementById("timer").style.display = "none";
+        document.getElementById("score").innerText = `You scored ${score} out of ${questions.length}!`;
+    }
+
+    function restartQuiz() {
+        score = 0;
+        currentQuestionIndex = 0;
+        timeLeft = 60;
+        startQuiz();
+    }
+
+    window.onload = startQuiz;
+</script>
+
+</body>
+</html>
